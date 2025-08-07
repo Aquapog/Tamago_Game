@@ -52,6 +52,15 @@ let timerInterval;
 
 let tamagoCoordinates = []; // store all tamago objects
 
+const pogAudio = new Audio('audio/pog.ogg');
+const faqAudio = new Audio('audio/faq.ogg');
+pogAudio.volume = 0.5;
+pogAudio.loop = false;
+faqAudio.loop = false;
+faqAudio.volume = 0.5;
+
+
+
 const speed = {
     slow: OBJECT_SIZE / 15,
     normal: OBJECT_SIZE / 20,
@@ -131,6 +140,8 @@ function makeAquaHappy() {
     if (isHappy) return; // ignore if already happy
     isHappy = true;
     popupVisible = true;
+    pogAudio.currentTime = 0;
+    pogAudio.play();
 
     // revert back after 300 ms
     clearTimeout(happyTimeout);
@@ -144,6 +155,8 @@ function makeAquaSad() {
     if (isSad) return;
     isSad = true;
     popupVisible = true;
+    faqAudio.currentTime = 0;
+    faqAudio.play();
 
     clearTimeout(sadTimeout);
     sadTimeout = setTimeout(() => {
@@ -273,6 +286,22 @@ function initGame() {
     }, 1000);
 }
 
+function restartGame() {
+    // start object spawn + update loop
+    objectLifeCycle = setInterval(create, 600);
+    gameLifeCycle = setInterval(update, 10);
+    timerInterval = setInterval(() => {
+        if (!gameOver) {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                gameOver = true;
+                clearAllIntervals();
+                endGame(score, goodCount, badCount);
+            }
+        }
+    }, 1000);
+}
+
 function clearAllIntervals() {
     clearInterval(objectLifeCycle);
     clearInterval(gameLifeCycle);
@@ -288,6 +317,9 @@ document.addEventListener("keyup", e => {
     if (e.key === "ArrowLeft") moveLeft = false;
     if (e.key === "ArrowRight") moveRight = false;
 });
-
+document.getElementById("pauseBtn").addEventListener("click", e => {
+    clearAllIntervals();
+    pauseGame();
+})
 // start the game.
 showStartScreen();

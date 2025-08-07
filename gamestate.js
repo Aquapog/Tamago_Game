@@ -1,7 +1,9 @@
-// gameState.js
-
 let gameState = "start"; // "start", "playing", "gameover", "pause"
 const overlay = document.createElement("div");
+
+const bgm = new Audio('audio/bgm.ogg');
+bgm.loop = true;
+bgm.volume = 0.5;
 
 function showStartScreen() {
     overlay.id = "gameOverlay";
@@ -53,6 +55,7 @@ function showGameOverScreen(finalScore, goodCount, badCount) {
         <p style="margin:5px;">Good: ${goodCount}</p>
         <p style="margin:5px;">Bad: ${badCount}</p>
         <button id="restartBtn" style="padding:10px 20px;font-size:18px;margin-top:15px;">Play Again</button>
+        <button id="homeBtn" style="padding:10px 20px;font-size:18px;margin-top:15px;"> Back Home</button>
     `;
 
     } else {
@@ -63,6 +66,7 @@ function showGameOverScreen(finalScore, goodCount, badCount) {
         <p style="margin:5px;">Good: ${goodCount}</p>
         <p style="margin:5px;">Bad: ${badCount}</p>
         <button id="restartBtn" style="padding:10px 20px;font-size:18px;margin-top:15px;">Play Again</button>
+        <button id="homeBtn" style="padding:10px 20px;font-size:18px;margin-top:15px;"> Back Home</button>
     `;
     }
 
@@ -71,10 +75,14 @@ function showGameOverScreen(finalScore, goodCount, badCount) {
     document.getElementById("restartBtn").onclick = () => {
         startGame();
     };
+
+    document.getElementById("homeBtn").onclick = () => {
+        showStartScreen();
+    }
 }
 
 function showPauseScreen() {
-    overlay.id = "pauseOverlay";
+    overlay.id = "gameOverlay";
     overlay.style.position = "absolute";
     overlay.style.top = "0";
     overlay.style.left = "0";
@@ -90,9 +98,19 @@ function showPauseScreen() {
     overlay.innerHTML = `
     <h1 style="margin-bottom:20px; color: aqua">Pause</h1>
     <button id="restartBtn" style="padding:10px 20px;font-size:18px;margin-top:15px;">Continue</button>
-    <button id="restartBtn" style="padding:10px 20px;font-size:18px;margin-top:15px;">Back to Home</button>`
+    <button id="homeBtn" style="padding:10px 20px;font-size:18px;margin-top:15px;">Back to Home</button>`
 
+    document.body.appendChild(overlay);
 
+    document.getElementById("restartBtn").onclick = () => {
+        bgm.play();
+        removeOverlay();
+        restartGame();
+    }
+
+    document.getElementById("homeBtn").onclick = () => {
+        showStartScreen();
+    }
 }
 
 function removeOverlay() {
@@ -103,12 +121,20 @@ function removeOverlay() {
 function startGame() {
     removeOverlay();
     gameState = "playing";
-
-    // Call your game init function (reset all variables, start loops, etc.)
+    bgm.currentTime = 0;
+    bgm.play();
+    // Call game init function
     initGame();
 }
 
 function endGame(finalScore, goodCount, badCount) {
     gameState = "gameover";
+    bgm.pause();
     showGameOverScreen(finalScore, goodCount, badCount);
+}
+
+function pauseGame() {
+    gameState = "pause";
+    bgm.pause();
+    showPauseScreen();
 }
