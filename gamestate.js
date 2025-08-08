@@ -1,7 +1,7 @@
 let gameState = "start"; // "start", "playing", "gameover", "pause"
 const overlay = document.createElement("div");
 
-const bgm = new Audio('audio/bgm.ogg');
+const bgm = new Audio('audio/bgm.mp3');
 bgm.loop = true;
 bgm.volume = 0.5;
 
@@ -29,9 +29,13 @@ function showStartScreen() {
 
     document.body.appendChild(overlay);
 
-    document.getElementById("startBtn").onclick = () => {
+    document.getElementById("startBtn").addEventListener('click',() => {
+        bgm.currentTime = 0;
+        bgm.play().catch((err) => {
+            console.warn("BGM play was blocked:", err);
+        });
         startGame();
-    };
+    });
 }
 
 function showGameOverScreen(finalScore, goodCount, badCount) {
@@ -72,9 +76,13 @@ function showGameOverScreen(finalScore, goodCount, badCount) {
 
     document.body.appendChild(overlay);
 
-    document.getElementById("restartBtn").onclick = () => {
+    document.getElementById("restartBtn").addEventListener('click',  () => {
+        bgm.currentTime = 0;
+        bgm.play().catch((err) => {
+            console.warn("BGM play was blocked:", err);
+        });
         startGame();
-    };
+    });
 
     document.getElementById("homeBtn").onclick = () => {
         showStartScreen();
@@ -121,8 +129,6 @@ function removeOverlay() {
 function startGame() {
     removeOverlay();
     gameState = "playing";
-    bgm.currentTime = 0;
-    bgm.play();
     // Call game init function
     initGame();
 }

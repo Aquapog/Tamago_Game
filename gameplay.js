@@ -52,8 +52,8 @@ let timerInterval;
 
 let tamagoCoordinates = []; // store all tamago objects
 
-const pogAudio = new Audio('audio/pog.ogg');
-const faqAudio = new Audio('audio/faq.ogg');
+const pogAudio = new Audio('audio/pog.mp3');
+const faqAudio = new Audio('audio/faq.mp3');
 pogAudio.volume = 0.5;
 pogAudio.loop = false;
 faqAudio.loop = false;
@@ -136,12 +136,18 @@ function drawPaddle() {
     }
 }
 
+function resetAudio() {
+    pogAudio.pause();
+    faqAudio.pause();
+    pogAudio.currentTime = 0;
+    faqAudio.currentTime = 0;
+}
 function makeAquaHappy() {
+    resetAudio();
+    pogAudio.play();
     if (isHappy) return; // ignore if already happy
     isHappy = true;
     popupVisible = true;
-    pogAudio.currentTime = 0;
-    pogAudio.play();
 
     // revert back after 300 ms
     clearTimeout(happyTimeout);
@@ -154,7 +160,9 @@ function makeAquaHappy() {
 function makeAquaSad() {
     if (isSad) return;
     isSad = true;
+
     popupVisible = true;
+    resetAudio();
     faqAudio.currentTime = 0;
     faqAudio.play();
 
@@ -178,10 +186,6 @@ function update() {
     // Move paddle
     if (moveLeft && paddleX > 0) paddleX -= paddleSpeed;
     if (moveRight && paddleX < canvas.width - PADDLE_SIZE) paddleX += paddleSpeed;
-
-    // Optional: remove tamags that fall out of view
-    let hitPaddle;
-    let hitObject;
 
     // Find first colliding object (do not overwrite later)
     let hitObjectData = tamagoCoordinates.find(t => {
@@ -223,6 +227,9 @@ function update() {
         }
 
     } else if (hitObjectType === objectType.ONION || hitObjectType === objectType.JOB) {
+        faqAudio.pause();
+        faqAudio.currentTime = 0;
+        faqAudio.play();
         makeAquaSad();
         badCount++;
         popupColor = 'red';
@@ -317,9 +324,23 @@ document.addEventListener("keyup", e => {
     if (e.key === "ArrowLeft") moveLeft = false;
     if (e.key === "ArrowRight") moveRight = false;
 });
-document.getElementById("pauseBtn").addEventListener("click", e => {
+
+document.getElementById("pauseBtn").addEventListener("click", () => {
     clearAllIntervals();
     pauseGame();
 })
+document.getElementById("leftBtn").addEventListener("mousedown", () => {
+    moveLeft = true;
+})
+document.getElementById("rightBtn").addEventListener("mousedown", () => {
+    moveRight = true;
+})
+document.getElementById("leftBtn").addEventListener("mouseup", () => {
+    moveLeft = false;
+})
+document.getElementById("rightBtn").addEventListener("mouseup", () => {
+    moveRight = false;
+})
+
 // start the game.
 showStartScreen();
