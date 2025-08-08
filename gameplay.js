@@ -329,16 +329,16 @@ document.getElementById("pauseBtn").addEventListener("click", () => {
     clearAllIntervals();
     pauseGame();
 })
-document.getElementById("leftBtn").addEventListener("mousedown", () => {
+document.getElementById("leftBtn").addEventListener("touchstart", () => {
     moveLeft = true;
 })
-document.getElementById("rightBtn").addEventListener("mousedown", () => {
+document.getElementById("rightBtn").addEventListener("touchstart", () => {
     moveRight = true;
 })
-document.getElementById("leftBtn").addEventListener("mouseup", () => {
+document.getElementById("leftBtn").addEventListener("touchend", () => {
     moveLeft = false;
 })
-document.getElementById("rightBtn").addEventListener("mouseup", () => {
+document.getElementById("rightBtn").addEventListener("touchend", () => {
     moveRight = false;
 })
 
